@@ -1,0 +1,1 @@
+export { handleNavigate } from './handleNavigation';
