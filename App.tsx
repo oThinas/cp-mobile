@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { IconContext } from 'phosphor-react-native';
 import { Provider } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast, { ErrorToast, SuccessToast } from 'react-native-toast-message';
 import { MainNavigator, colors } from './src/core';
 
 /** Store */
@@ -40,6 +41,15 @@ export default function App() {
           </IconContext.Provider>
         </NavigationContainer>
       </SafeAreaProvider>
+
+      <Toast config={{
+        success(props) {
+          return <SuccessToast {...props} text1Style={{ fontSize: 20 }} text2Style={{ fontSize: 16 }} />;
+        },
+        error(props) {
+          return <ErrorToast {...props} text1Style={{ fontSize: 20 }} text2Style={{ fontSize: 16 }} />;
+        },
+      }} />
     </Provider>
   );
 }

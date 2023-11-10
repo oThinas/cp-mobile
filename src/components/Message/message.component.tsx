@@ -1,6 +1,6 @@
 /** Core */
 import { useState } from 'react';
-import { Modal, StyleSheet, TextInput, ToastAndroid, View } from 'react-native';
+import { Modal, StyleSheet, TextInput, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { colors } from '../../core';
 
@@ -15,6 +15,7 @@ import { feedbackApi } from '../../api';
 
 /** Props */
 import { IMessageProps } from './message.props';
+import Toast from 'react-native-toast-message';
 
 export function MessageComponent(props: IMessageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,12 +29,16 @@ export function MessageComponent(props: IMessageProps) {
   const onSubmit = handleSubmit(async (data) => {
     setIsModalOpen(false);
     setValue('feedback', '');
-    console.log(props.content);
-    console.log(data);
-    console.log(user);
 
     const response = await feedbackApi.sendFeedback(props.content, data.feedback, user);
-    ToastAndroid.show(response, ToastAndroid.LONG);
+    Toast.show({
+      type: response.success ? 'success' : 'error',
+      text1: response.success ? 'Feedback enviado' : 'Erro ao enviar feedback',
+      text2: response.message,
+      visibilityTime: 4000,
+      autoHide: true,
+      topOffset: 56,
+    });
   });
 
   return (

@@ -10,9 +10,9 @@ import { IUser } from '../interfaces';
 async function sendFeedback(message: string, feedback: string, user: IUser) {
   try {
     await api.post('/feedback', { message, feedback, user });
-    return 'Obrigado pelo feedback!';
+    return { success: false, message: 'Tente novamente mais tarde.' };
   } catch {
-    return 'Ocorreu um erro ao enviar o feedback, tente novamente mais tarde.';
+    return { success: true, message: 'Feedback enviado com sucesso!' };
   }
 }
 
