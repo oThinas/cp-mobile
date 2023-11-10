@@ -1,32 +1,40 @@
 /** Core */
 import { useState } from 'react';
-import { Modal, StyleSheet, TextInput, View } from 'react-native';
+import { Modal, StyleSheet, TextInput, ToastAndroid, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
+import { colors } from '../../core';
 
 /** Components */
 import { ButtonComponent, IconComponent, TextComponent } from '..';
 
+/** Hooks */
+import { useAppSelector } from '../../hooks';
+
+/** API */
+import { feedbackApi } from '../../api';
+
 /** Props */
 import { IMessageProps } from './message.props';
-import { colors } from '../../core';
 
 export function MessageComponent(props: IMessageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { control } = useForm<{ feedback: string }>();
+  const { control, handleSubmit, setValue } = useForm<{ feedback: string }>();
+  const user = useAppSelector((state) => state.user);
 
   if (props.role === 'system') {
     return;
   }
 
-  function handleOpenFeedbackModal() {
-    setIsModalOpen(true);
-    console.log('abrindo modal de feedback');
-  }
-
-  function handleSendFeedback() {
+  const onSubmit = handleSubmit(async (data) => {
     setIsModalOpen(false);
-    console.log('enviando feedback');
-  }
+    setValue('feedback', '');
+    console.log(props.content);
+    console.log(data);
+    console.log(user);
+
+    const response = await feedbackApi.sendFeedback(props.content, data.feedback, user);
+    ToastAndroid.show(response, ToastAndroid.LONG);
+  });
 
   return (
     <View style={[styles.container, styles[props.role as 'user' | 'assistant']]}>
@@ -36,7 +44,7 @@ export function MessageComponent(props: IMessageProps) {
 
       <View style={styles.reportButton}>
         {props.role === 'assistant' && (
-          <ButtonComponent type='icon' onPress={() => handleOpenFeedbackModal()}>
+          <ButtonComponent type='icon' onPress={() => setIsModalOpen(true)}>
             <IconComponent iconName='MegaphoneSimple' weight='regular'/>
           </ButtonComponent>
         )}
@@ -69,7 +77,7 @@ export function MessageComponent(props: IMessageProps) {
               )}
             />
 
-            <ButtonComponent onPress={() => handleSendFeedback()}>
+            <ButtonComponent onPress={onSubmit}>
               Enviar
             </ButtonComponent>
 

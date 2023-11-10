@@ -45,6 +45,10 @@ export function Chat() {
   }, []);
 
   const onSubmit = handleSubmit(async (data) => {
+    if (!data.chatMessage.trim()) {
+      return;
+    }
+
     textInputRef.current?.blur();
 
     const newMessage: IMessage = {
